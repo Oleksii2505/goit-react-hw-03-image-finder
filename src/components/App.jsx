@@ -2,6 +2,10 @@ import { Component } from "react";
 import { AppComponent } from './App.styled';
 import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
+import { LoadMoreBtn } from './Button/Button';
+import { Modal } from './Modal/Modal';
+import { Loader } from './Loader/Loader';
+
 import axios from 'axios';
 
 const API_KEY = '34346639-e8efe2ce21a3e54ecceb798ec';
@@ -132,11 +136,16 @@ export class App extends Component {
   };
 
   render() {
-    const { hits } = this.state;
+    const { hits, isLoading, showButton, showModal, largeImage } = this.state;
     return (
       <AppComponent>
         <SearchBar onSubmit={this.handleSubmit.bind(this)} />
         <ImageGallery hits={hits} showModal={this.showModal} />
+        {isLoading && <Loader />}
+        {showButton && <LoadMoreBtn onClick={this.onLoadMore} />}
+        {showModal && (
+          <Modal closeModal={this.closeModal} largeImage={largeImage} />
+        )}
       </AppComponent>
     );
   }
