@@ -7,13 +7,6 @@ import { Modal } from './Modal/Modal';
 import { Loader } from './Loader/Loader';
 import { fetchData } from '../services';
 
-// import axios from 'axios';
-
-// const API_KEY = '34346639-e8efe2ce21a3e54ecceb798ec';
-// const BASE_URL = 'https://pixabay.com/api/';
-// const OPTIONS_FOR_RESPONSE =
-//   'image_type=photo&orientation=horizontal&safesearch=true';
-
 export class App extends Component {
   state = {
     searchQuery: '',
@@ -39,7 +32,7 @@ export class App extends Component {
           
         const responseHits = res.data.hits;
         if(responseHits.length === 0) {
-          this.setState({hits: []})
+          alert('Enter another word to search');
           return;
         }
         const filteredData = responseHits.map(
@@ -50,128 +43,26 @@ export class App extends Component {
             tags,
           })
         );
+        this.setState(prev => ({hits: [...prev.hits, ...res.data.hits],
+        showButton: this.state.page < Math.ceil(res.data.totalHits < 12)
+        }))
        
-        if (filteredData.length === 0) {
-           this.setState(prevState => ({
-          hits: [...prevState.hits]
-      }));
-          alert('Enter another word to search');
-          return;
-        }
-
-        if (filteredData.length <= 12) {
-          this.setState({
-            hits: filteredData,
-            isLoading: false,
-            showButton: false,
-            buttonLoading: false,
-          });
-        }
-
-        // this.setState({
-        //   hits: filteredData,
-        //   isLoading: false,
-        //   showButton: true,
-        //   buttonLoading: false,
-        // });
+      
       } catch (e) {
         console.log(e);
+      } finally {
+        this.setState({ isLoading: false });
       }
     }
   }    
-
-    // if (prevPage !== nextPage) {
-    //   try {
-    //     if (nextPage === 1) {
-    //       return;
-    //     }
-    //     this.setState({ buttonLoading: true });
-    //     const res = await fetchData(nextSearchQuery, nextPage)
-          
-    //     const responceHits = res.data.hits;
-    //     const filteredData = responceHits.map(
-    //       ({ id, largeImageURL, webformatURL }) => ({
-    //         id,
-    //         largeImageURL,
-    //         webformatURL,
-    //       })
-    //     );
-    //     const updatedHits = [...this.state.hits, ...filteredData];
-
-    //     if (filteredData.length < 12) {
-    //       this.setState({
-    //         hits: updatedHits,
-    //         showButton: false,
-    //         isLoading: false,
-    //       });
-    //       return;
-    //     }
-    //     this.setState({
-    //       hits: updatedHits,
-    //       isLoading: false,
-    //       showButton: true,
-    //       buttonLoading: false,
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-  // };
-
-  // async componentDidUpdate(prevProps, prevState) {
-
-  //   const {searchQuery} = this.props;
-  //   const {page} = this.state;
-   
-  //  if (prevProps.searchQuery !== searchQuery) {
-
-  //    this.setState({page: 1, status: "pending"});
-  //    try {
-  //       const response = await fetchData(searchQuery, 1);
-
-  //       if (response.totalHits === 0) {
-  //           this.setState({status: "rejected", error: `Sorry, there are no images ${searchQuery}. Please try again.`})
-  //         } else {
-  //           this.setState({images: response.hits, status: "resolved"}); 
-  //           if (response.totalHits <= 12) {
-  //               this.setState({isLoadButton: false});
-  //             } else {
-  //               this.setState({isLoadButton: true});
-  //             }
-  //         }  
-
-  //    } catch (error) {
-  //       this.setState({error: error.message, status: "rejected"});
-  //    }
-     
-  //  } else if (prevState.page !== page && page !== 1) {
-
-  //       try {
-  //          const response = await fetchData(searchQuery, page);
-  //          this.setState(prevState => ({
-  //           images: [...prevState.images, ...response.hits], status: "resolved"
-  //       })); 
-  //       if (Math.ceil(response.totalHits / 12) === page) {
-  //           this.setState({isLoadButton: false});
-  //         } else {
-  //           this.setState({isLoadButton: true});
-  //         } 
-          
-  //       } catch (error) {
-  //           this.setState({error: error.message, status: "rejected"});
-  //        }
-  //   }
-
- 
-  // }
 
   handleSubmit(searchWord) {
     this.setState({hits: [] , page: 1 ,searchQuery: searchWord.toLowerCase().trim() });
   };
 
   onLoadMore = () => {
-    const prevPage = this.prevState.page + 1;
-    this.setState({ page: prevPage });
+
+    this.setState(prevState =>({ page: prevState.page + 1 }));
   };
 
   showModal = image => {
