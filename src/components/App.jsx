@@ -38,7 +38,7 @@ export class App extends Component {
         }
        
         this.setState(prev => ({hits: [...prev.hits, ...data.hits],
-        showButton: this.state.page < Math.ceil(data.total < 12)
+        showButton: this.state.page < Math.ceil(data.totalHits / 12)
         }))
        
       
