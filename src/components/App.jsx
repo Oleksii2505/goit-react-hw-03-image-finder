@@ -17,6 +17,7 @@ export class App extends Component {
     showButton: false,
     showModal: false,
     largeImage: '',
+    error: '',
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -26,33 +27,29 @@ export class App extends Component {
     const nextPage = this.state.page;
 
     if (prevSearchQuery !== nextSearchQuery || prevPage !== nextPage) {
-      try {
+      
         this.setState({ isLoading: true });
-        const res = await fetchData(nextSearchQuery, nextPage);
+        fetchData(nextSearchQuery, nextPage)
+        .then(data => {
           
-        const responseHits = res.data.hits;
-        if(responseHits.length === 0) {
+        if(data.hits.length === 0) {
           alert('Enter another word to search');
           return;
         }
-        const filteredData = responseHits.map(
-          ({ id, webformatURL, largeImageURL, tags }) => ({
-            id,
-            webformatURL,
-            largeImageURL,
-            tags,
-          })
-        );
-        this.setState(prev => ({hits: [...prev.hits, ...res.data.hits],
-        showButton: this.state.page < Math.ceil(res.data.totalHits < 12)
+       
+        this.setState(prev => ({hits: [...prev.hits, ...data.hits],
+        showButton: this.state.page < Math.ceil(data.total < 12)
         }))
        
       
-      } catch (e) {
-        console.log(e);
-      } finally {
+      }) 
+      .catch (err => {
+        console.log(err);
+        this.setState({ error: err.message });
+      }) 
+      .finally (() => {
         this.setState({ isLoading: false });
-      }
+    });
     }
   }    
 

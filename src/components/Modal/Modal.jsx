@@ -1,25 +1,16 @@
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
-
-import { ModalOverlay, ModalContentWindow } from './Modal.styled';
 import { Component } from 'react';
+import { ModalOverlay, ModalContentWindow } from './Modal.styled';
+
 const modalRoot = document.querySelector('#modal-root');
 
-// export const Modal = ({ closeModal, largeImage }) => {
-//   return createPortal(
-//     <ModalOverlay
-//       onClick={() => {
-//         closeModal();
-//       }}
-//     >
-//       <ModalContentWindow>
-//         <img src={largeImage} alt="tag" />
-//       </ModalContentWindow>
-//     </ModalOverlay>,
-//     modalRoot
-//   );
-// };
 export class Modal extends Component {
+
+  static propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    largeImage: PropTypes.string.isRequired,
+};
   
  componentDidMount() {
     window.addEventListener("keydown", this.closeModalOnEsc);
@@ -31,13 +22,13 @@ export class Modal extends Component {
 
  closeModalOnEsc = event => {
      if (event.code === 'Escape') {
-         this.props.onClose();
+         this.props.closeModal();
      }
  }
 
  closeModalOnClickBackdrop = event => {
      if (event.target === event.currentTarget) {
-         this.props.onClose();
+         this.props.closeModal();
      }
  }
 
@@ -56,8 +47,3 @@ export class Modal extends Component {
  }
 
 }
-
-Modal.propTypes = {
-  closeModal: PropTypes.func.isRequired,
-  largeImage: PropTypes.string.isRequired,
-};
